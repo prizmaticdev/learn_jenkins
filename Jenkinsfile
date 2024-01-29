@@ -44,6 +44,7 @@ def void deploy(String branchName){
 
 }
 def getChangedFiles(){
+   println("running getChangedFiles()")
    def changes = []
    def changeLogSets = currentBuild.changeSets
    def filePath = ""
