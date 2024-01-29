@@ -1,39 +1,67 @@
-/* Requires the Docker Pipeline plugin */
 pipeline {
-    agent { docker { image 'python:3.12.1-alpine3.19' } }
-    stages {
-        stage('Build') {
+  agent any 
+  stages {
+        stage('Build') { 
             steps {
-                sh 'echo building'
+                echo "This is Build step."
             }
         }
-        stage('Test') {
+        stage('Test') { 
             steps {
-                sh 'echo testint'
+                echo "This is Test step."
             }
         }
-        stage('Deploy') {
+        stage('Deploy') {         
             steps {
-                sh 'echo deploying'
+              script{
+                 echo "This is Deploy step."
+                 def changedFiles = [];
+                 
+                 // Calling getChangedFiles method...
+                 changedFiles = getChangedFiles();
+                 if(changedFiles.size>0){
+                    println(changedFiles)
+                 }
+                 else{
+                    println("No changed file.")
+                 }
+                 
+                 def branchName = "${env.BRANCH_NAME}"
+                 // Calling deploy method... 
+                 deploy(branchName);
+              }
             }
         }
+   }
+}
+def void deploy(String branchName){
+    if(branchName == "master"){
+       println("Deploying to Prod.")
     }
-    post {
-        always {
-            echo 'One way or another, I have finished'
-            deleteDir() /* clean up our workspace */
-        }
-        success {
-            echo 'I succeeded!'
-        }
-        unstable {
-            echo 'I am unstable :/'
-        }
-        failure {
-            echo 'I failed :('
-        }
-        changed {
-            echo 'Things were different before...'
-        }
+    else if(branchName == "test"){
+       println("Deploying to Test.")
     }
+
+}
+def getChangedFiles(){
+   def changes = []
+   def changeLogSets = currentBuild.changeSets
+   def filePath = ""
+   for (int i = 0; i < changeLogSets.size(); i++) {
+      def entries = changeLogSets[i].items
+      for (int j = 0; j < entries.length; j++) {
+         def entry = entries[j]
+         def files = new ArrayList(entry.affectedFiles)
+         for (int k = 0; k < files.size(); k++) {
+            def file = files[k]
+            filePath = "${file.path}"
+            if("${file.editType.name}"!="delete"){
+               changes.add(filePath);
+             }
+         }
+      }
+   }
+   changes.unique();
+   changes.sort();
+   return changes;
 }
