@@ -19,8 +19,6 @@ pipeline {
                  
                  // Calling getChangedFiles method...
                  changedFiles = getChangedFiles();
-                 println("changedFiles: " + changedFiles)
-                 println("changedFiles.size: " + changedFiles.size())
                  if(changedFiles.size() > 0){
                     println(changedFiles)
                  }
@@ -37,18 +35,14 @@ pipeline {
    }
 }
 def void deploy(String branchName){
-    println("running deploy")
     if(branchName == "master"){
        println("Deploying to Prod.")
     }
     else if(branchName == "test"){
        println("Deploying to Test.")
     }
-    println("end of deploy")
-
 }
 def getChangedFiles(){
-   println("running getChangedFiles()")
    def changes = []
    def changeLogSets = currentBuild.changeSets
    def filePath = ""
@@ -68,6 +62,5 @@ def getChangedFiles(){
    }
    changes.unique();
    changes.sort();
-  println("end of getChangedFiles()")
    return changes;
 }
