@@ -20,8 +20,8 @@ pipeline {
                  // Calling getChangedFiles method...
                  changedFiles = getChangedFiles();
                  println("changedFiles: " + changedFiles)
-                 println("changedFiles.size: " + changedFiles.size)
-                 if(changedFiles.size>0){
+                 println("changedFiles.size: " + changedFiles.size())
+                 if(changedFiles.size() > 0){
                     println(changedFiles)
                  }
                  else{
